@@ -16,6 +16,7 @@ export interface ScrollListProps {
   onViewableItemsChanged?: (info: {viewableItems: any[], start: number, end: number }) => void;
   onEndReached?: () => void;
   onEndReachedThreshold?: number;
+  onRowDeleted?: () => void;
 }
 
 interface State {
@@ -119,6 +120,29 @@ export class ScrollList extends React.Component<ScrollListProps, State> {
     return items;
   }
 
+  deleteRow = (index: number) => {
+    const cacheIndex = this.findCacheRow(index);
+    if (cacheIndex !== -1) {
+      this.itemCache.splice(cacheIndex, 1);
+    }
+  };
+
+  findCacheRow = (index: number) => {
+    let start = 0;
+    let end = this.itemCache.length;
+    while(start <= end) {
+      const mid = Math.floor((start + end) / 2);
+      if (this.itemCache[mid].index === index) {
+        return mid;
+      } else if (this.itemCache[mid].index > index) {
+        end--;
+      } else {
+        start++;
+      }
+    }
+    return -1;
+  }
+
   findFirst(scrollTop: number) {
     const { estimateRowHeight }  = this.props;
 
@@ -174,9 +198,7 @@ export class ScrollList extends React.Component<ScrollListProps, State> {
   updateItems() {
     const { data, estimateRowHeight, onViewableItemsChanged } = this.props;
     const items = data.slice(this.startIndex, this.endIndex);
-
     onViewableItemsChanged?.({ viewableItems: items, start: this.startIndex, end: this.endIndex });
-
     this.setState({
       startOffset: this.firstItem.top,
       endOffset: (data.length - this.endIndex) * estimateRowHeight,
