@@ -32,7 +32,7 @@ yarn run build
 | renderItem    | Function      |     ✓     | Render each row in list `(item: {item: any, index: number }) => any` |
 | keyExtractor  | Function      |           | Used to generate a unique key. The deault is `item.key` if exists, otherwise  fall backs to `index` |
 | estimateRowHeight | Number    |     ✓     | Used to estimate dynamic row height. |
-| onScroll      | Function      |     ✓     | Will be called when scrolling. `(item: {viewport: number, scrollTop: number }) => void`  |
+| onScroll      | Function      |           | Will be called when scrolling. `(item: {viewport: number, scrollTop: number }) => void`  |
 | onViewableItemsChanged | Function |       | Called when viewable items changed, `(info: {viewableItems: any[], start: number, end: number }) => void` |
 | onEndReachedThreshold  | Number   |       | Determines how far from the end to trigger the `onReachedEnd`, Default is `5` |
 | onEndReached  | Function      |           | Called when the left unrendered item gets within the `onEndReachedThreshold` |
