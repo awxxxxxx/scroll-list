@@ -18,13 +18,15 @@ yarn run start
 yarn run build
 ```
 
+## Design Docs
+[See more](./docs/design.md)
+
 ## API
 
 ### Prop Types
 
-
 | Property      | Type          | Required  | Description |
-| ------------- |:-------------:| ---------:| ----------: |
+| ------------- |:-------------:| :---------: | ---------- |
 | data          | Array         |     ✓     | Data to render list |
 | height        | Number        |     ✓     | heiget of the scroll list container |
 | renderItem    | Function      |     ✓     | Render each row in list `(item: {item: any, index: number }) => any` |
