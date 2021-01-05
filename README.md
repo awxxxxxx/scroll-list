@@ -130,4 +130,11 @@ function App() {
 }
 
 ```
-<img src="./docs/list.png" alt="drawing" width="260"/>
+## Peview
+
+Scan the QR code to test live demo<br/>
+
+<img src="./docs/preview.png" alt="qr" width="260"/>
+
+<br/>
+<img src="./docs/list.png" alt="list" width="260"/>
