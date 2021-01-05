@@ -15,7 +15,7 @@
 - 兼容 `img`, img 渲染后需要重新计算高度
 
 ## Reference
-[再谈前端虚拟列表的实现](https://zhuanlan.zhihu.com/p/34585166)
-[React Native - Flatlist](https://reactnative.dev/docs/flatlist)
-[react-virtualized](https://github.com/bvaughn/react-virtualized)
-[UITableView](https://developer.apple.com/documentation/uikit/uitableview)
+- [再谈前端虚拟列表的实现](https://zhuanlan.zhihu.com/p/34585166)
+- [React Native - Flatlist](https://reactnative.dev/docs/flatlist)
+- [react-virtualized](https://github.com/bvaughn/react-virtualized)
+- [UITableView](https://developer.apple.com/documentation/uikit/uitableview)
