@@ -14,8 +14,8 @@ export interface ScrollListProps {
   height: number;
   onScroll?: (item: {viewport: number, scrollTop: number }) => void;
   onViewableItemsChanged?: (info: {viewableItems: any[], start: number, end: number }) => void;
-  onEndReached?: () => void;
   onEndReachedThreshold?: number;
+  onEndReached?: () => void;
   onRowDeleted?: () => void;
 }
 
@@ -32,6 +32,7 @@ interface Item {
 }
 
 const bottomBuffer = 5;
+const estimateEndDistance = 30;
 
 export class ScrollList extends React.Component<ScrollListProps, State> {
   // 可见区域的第一个元素
@@ -50,6 +51,7 @@ export class ScrollList extends React.Component<ScrollListProps, State> {
   itemCache: Item[] = [];
   viewableCount = 0;
   calledEndReached = false;
+  scrollRect = { top: 0 };
 
   constructor (props: ScrollListProps) {
     super(props);
@@ -64,6 +66,9 @@ export class ScrollList extends React.Component<ScrollListProps, State> {
     const { height, estimateRowHeight } = this.props;
     this.viewableCount = Math.ceil(height / estimateRowHeight) + bottomBuffer;
     this.endIndex = this.startIndex + this.viewableCount;
+    if (this.scrollRef.current) {
+      this.scrollRect = this.scrollRef.current.getBoundingClientRect();
+    }
     this.updateItems();
   }
 
@@ -76,7 +81,7 @@ export class ScrollList extends React.Component<ScrollListProps, State> {
 
   memorizeItem = (elem: HTMLDivElement, index: number) => {
     const rect = elem.getBoundingClientRect();
-    const top = rect.top + this.scrollTop;
+    const top = rect.top + this.scrollTop - (this.scrollRect.top || 0);
 
     this.itemCache.push({
       index,
@@ -97,6 +102,10 @@ export class ScrollList extends React.Component<ScrollListProps, State> {
     ) {
       this.calcIndex(scrollTop);
       this.updateItems();
+    }
+
+    if (scrollTop < this.scrollTop && this.scrollTop - scrollTop >= estimateEndDistance) {
+      this.calledEndReached = false;
     }
 
     this.scrollTop = scrollTop
@@ -185,10 +194,9 @@ export class ScrollList extends React.Component<ScrollListProps, State> {
     this.startIndex = this.firstItem.index;
     this.endIndex = this.startIndex + this.viewableCount;
 
-
     const threshold = this.props.onEndReachedThreshold || bottomBuffer;
     if (Math.abs(this.endIndex - this.props.data.length) <=  threshold) {
-      if (!this.calledEndReached) {
+      if (!this.calledEndReached && scrollTop > this.scrollTop) {
         this.props.onEndReached?.();
         this.calledEndReached = true;
       }
@@ -209,7 +217,6 @@ export class ScrollList extends React.Component<ScrollListProps, State> {
   render () {
     const { height } = this.props;
     const { startOffset, endOffset, viewableItems } = this.state
-
     return (
       <div
         className='scroll-list-container'

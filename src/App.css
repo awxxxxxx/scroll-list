@@ -16,3 +16,21 @@
   height: 50px;
   border-bottom: 1px solid #fff;
 }
+
+.setting {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 50px;
+}
+
+.setting div {
+  padding: 10px 15px;
+  background-color: rgb(4, 6, 21);
+  border-radius: 20px;
+  color: #fff;
+}
+
+.setting .selected {
+  background-color: rgb(94, 175, 103);
+}

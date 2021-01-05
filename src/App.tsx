@@ -5,10 +5,19 @@ import Swiper from './Swiper';
 
 function App() {
   const [data, setData] = useState(new Array(100).fill(0).map((value, index) => ({ index })));
-  const ref = useRef<ScrollList>(null);
   const [currentIndex, setCurrentIndex] = useState(-1);
+  const [isInfinity, setIsInfinity] = useState(true);
+  const [enabledDelete, setEnabledDelete] = useState(false);
+  const ref = useRef<ScrollList>(null);
 
   const renderItem: ScrollListProps['renderItem'] = ({ item, index }) => {
+    if (!enabledDelete) {
+      return (
+        <div className="item">
+          {'#' + index + '-' + item.index }
+        </div>
+      );
+    }
     return (
       <Swiper
         selected={currentIndex === index}
@@ -32,18 +41,24 @@ function App() {
   };
 
   const onEndReached = () => {
-    // setData([...data, ...new Array(100).fill(0).map((value, index) => ({ index: data.length + index }))])
+    if (isInfinity) {
+      setData([...data, ...new Array(100).fill(0).map((value, index) => ({ index: data.length + index }))])
+    }
     console.log('end reached');
   };
 
   return (
     <div className="App">
       <header className="App-header">
+        <div className="setting">
+          <div className={isInfinity ? 'selected' : ''} onClick={() => { setIsInfinity(!isInfinity);}}>无限滚动</div>
+          <div className={enabledDelete ? 'selected': ''} onClick={() => { setEnabledDelete(!enabledDelete)}}>左滑删除</div>
+        </div>
         <ScrollList
           ref={ref}
           renderItem={renderItem}
           data={data}
-          height={window.innerHeight}
+          height={window.innerHeight - 50}
           onEndReached={onEndReached}
           estimateRowHeight={50}
         />
