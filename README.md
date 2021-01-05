@@ -1,46 +1,131 @@
-# Getting Started with Create React App
+# Overview
+`scroll-list` build with react and typescript. Supports infinate scroll.
+## Getting Started
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### Installation
+```bash
+yarn
+```
+### Dev
 
-## Available Scripts
+```bash
+yarn run start
+```
 
-In the project directory, you can run:
+### build
 
-### `yarn start`
+```
+yarn run build
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## API
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### Prop Types
 
-### `yarn test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+| Property      | Type          | Required  | Description |
+| ------------- |:-------------:| ---------:| ----------: |
+| data          | Array         |     ✓     | Data to render list |
+| height        | Number        |     ✓     | heiget of the scroll list container |
+| renderItem    | Function      |     ✓     | Render each row in list `(item: {item: any, index: number }) => any` |
+| keyExtractor  | Function      |           | Used to generate a unique key. The deault is `item.key` if exists, otherwise  fall backs to `index` |
+| estimateRowHeight | Number    |     ✓     | Used to estimate dynamic row height. |
+| onScroll      | Function      |     ✓     | Will be called when scrolling. `(item: {viewport: number, scrollTop: number }) => void`  |
+| onViewableItemsChanged | Function |       | Called when viewable items changed, `(info: {viewableItems: any[], start: number, end: number }) => void` |
+| onEndReachedThreshold  | Number   |       | Determines how far from the end to trigger the `onReachedEnd`, Default is `5` |
+| onEndReached  | Function      |           | Called when the left unrendered item gets within the `onEndReachedThreshold` |
 
-### `yarn build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Feature
+### 1. Infinate Scroll
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```typescript
+import { ScrollList, ScrollListProps } from 'scroll-list';
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+function App() {
+  const [data, setData] = useState(new Array(100).fill(0).map((value, index) => ({ index })));
+  const ref = useRef<ScrollList>(null);
 
-### `yarn eject`
+  const renderItem: ScrollListProps['renderItem'] = ({ item, index }) => {
+    return (
+      <div className="item">
+        {'#' + index + '-' + item.index }
+      </div>
+    );
+  };
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+  // place your fetching data logic
+  const onEndReached = () => {
+    setData([...data, ...new Array(100).fill(0).map((value, index) => ({ index: data.length + index }))])
+    console.log('end reached');
+  };
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+  return (
+    <div>
+      <ScrollList
+        ref={ref}
+        renderItem={renderItem}
+        data={data}
+        height={window.innerHeight}
+        onEndReached={onEndReached}
+        estimateRowHeight={50}
+      />
+    </div>
+  );
+}
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### 2. Swipe to delete
 
-## Learn More
+```typescript
+import { ScrollList, ScrollListProps } from './List';
+import Swiper from './Swiper';
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+function App() {
+  const [data, setData] = useState(new Array(100).fill(0).map((value, index) => ({ index })));
+  const [currentIndex, setCurrentIndex] = useState(-1);
+  const ref = useRef<ScrollList>(null);
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+  const renderItem: ScrollListProps['renderItem'] = ({ item, index }) => {
+    return (
+      <Swiper
+        selected={currentIndex === index}
+        threshold={60}
+        onSelect={() => setCurrentIndex(index)}
+        onDelete={() => {
+          const items = [...data];
+          items.splice(index, 1);
+          if (ref.current) {
+            ref.current.deleteRow(index);
+          }
+          setCurrentIndex(-1);
+          setData(items);
+        }}
+      >
+        <div className="item">
+          {'#' + index + '-' + item.index }
+        </div>
+      </Swiper>
+    )
+  };
+
+  const onEndReached = () => {
+    setData([...data, ...new Array(100).fill(0).map((value, index) => ({ index: data.length + index }))])
+    console.log('end reached');
+  };
+
+  return (
+    <ScrollList
+      ref={ref}
+      renderItem={renderItem}
+      data={data}
+      height={window.innerHeight - 50}
+      onEndReached={onEndReached}
+      estimateRowHeight={50}
+    />
+  );
+}
+
+```
+<img src="./docs/list.png" alt="drawing" width="260"/>

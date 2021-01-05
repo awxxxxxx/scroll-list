@@ -16,7 +16,6 @@ export interface ScrollListProps {
   onViewableItemsChanged?: (info: {viewableItems: any[], start: number, end: number }) => void;
   onEndReachedThreshold?: number;
   onEndReached?: () => void;
-  onRowDeleted?: () => void;
 }
 
 interface State {
